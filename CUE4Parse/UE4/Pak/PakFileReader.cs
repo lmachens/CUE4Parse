@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -19,7 +19,7 @@ using static CUE4Parse.UE4.Pak.Objects.EPakFileVersion;
 
 namespace CUE4Parse.UE4.Pak
 {
-    public class PakFileReader : AbstractAesVfsReader
+    public partial class PakFileReader : AbstractAesVfsReader
     {
         public readonly FArchive Ar;
         public readonly FPakInfo Info;
@@ -39,7 +39,7 @@ namespace CUE4Parse.UE4.Pak
             if (Info.Version > PakFile_Version_Latest &&
                 Ar.Game != EGame.GAME_TowerOfFantasy && Ar.Game != EGame.GAME_MeetYourMaker &&
                 Ar.Game != EGame.GAME_Snowbreak && Ar.Game != EGame.GAME_TheDivisionResurgence &&
-                Ar.Game != EGame.GAME_TorchlightInfinite) // These games use version >= 12 to indicate their custom formats
+                Ar.Game != EGame.GAME_TorchlightInfinite && Ar.Game != EGame.GAME_DeadbyDaylight) // These games use version >= 12 to indicate their custom formats
             {
                 log.Warning($"Pak file \"{Name}\" has unsupported version {(int) Info.Version}");
             }
@@ -103,6 +103,11 @@ namespace CUE4Parse.UE4.Pak
             else
                 ReadIndexLegacy(caseInsensitive);
 
+            if (!IsEncrypted && EncryptedFileCount > 0)
+            {
+                log.Warning($"Pak file \"{Name}\" is not encrypted but contains encrypted files");
+            }
+
             if (Globals.LogVfsMounts)
             {
                 var elapsed = watch.Elapsed;
@@ -130,7 +135,7 @@ namespace CUE4Parse.UE4.Pak
             }
             catch (Exception e)
             {
-                throw new InvalidAesKeyException($"Given aes key '{AesKey?.KeyString}'is not working with '{Name}'", e);
+                throw new InvalidAesKeyException($"Given aes key '{AesKey?.KeyString}' is not working with '{Name}'", e);
             }
 
             ValidateMountPoint(ref mountPoint);
@@ -168,7 +173,7 @@ namespace CUE4Parse.UE4.Pak
             }
             catch (Exception e)
             {
-                throw new InvalidAesKeyException($"Given aes key '{AesKey?.KeyString}'is not working with '{Name}'", e);
+                throw new InvalidAesKeyException($"Given aes key '{AesKey?.KeyString}' is not working with '{Name}'", e);
             }
 
             ValidateMountPoint(ref mountPoint);
