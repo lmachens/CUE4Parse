@@ -39,7 +39,8 @@ namespace CUE4Parse.UE4.Pak
             if (Info.Version > PakFile_Version_Latest &&
                 Ar.Game != EGame.GAME_TowerOfFantasy && Ar.Game != EGame.GAME_MeetYourMaker &&
                 Ar.Game != EGame.GAME_Snowbreak && Ar.Game != EGame.GAME_TheDivisionResurgence &&
-                Ar.Game != EGame.GAME_TorchlightInfinite && Ar.Game != EGame.GAME_DeadbyDaylight) // These games use version >= 12 to indicate their custom formats
+                Ar.Game != EGame.GAME_TorchlightInfinite && Ar.Game != EGame.GAME_DeadByDaylight &&
+                Ar.Game != EGame.GAME_QQ && Ar.Game != EGame.GAME_DreamStar) // These games use version >= 12 to indicate their custom formats
             {
                 log.Warning($"Pak file \"{Name}\" has unsupported version {(int) Info.Version}");
             }
@@ -60,8 +61,10 @@ namespace CUE4Parse.UE4.Pak
             if (pakEntry.IsCompressed)
             {
 #if DEBUG
-                Log.Debug($"{pakEntry.Name} is compressed with {pakEntry.CompressionMethod}");
+                Log.Debug("{EntryName} is compressed with {CompressionMethod}", pakEntry.Name, pakEntry.CompressionMethod);
 #endif
+                if (Game is EGame.GAME_MarvelRivals or EGame.GAME_OperationApocalypse)
+                    return NetEaseExtract(reader, pakEntry);
                 var uncompressed = new byte[(int) pakEntry.UncompressedSize];
                 var uncompressedOff = 0;
                 foreach (var block in pakEntry.CompressionBlocks)
@@ -70,10 +73,10 @@ namespace CUE4Parse.UE4.Pak
                     var blockSize = (int) block.Size;
                     var srcSize = blockSize.Align(pakEntry.IsEncrypted ? Aes.ALIGN : 1);
                     // Read the compressed block
-                    byte[] compressed = ReadAndDecrypt(srcSize, reader, pakEntry.IsEncrypted);
+                    var compressed = ReadAndDecrypt(srcSize, reader, pakEntry.IsEncrypted);
                     // Calculate the uncompressed size,
-                    // its either just the compression block size
-                    // or if its the last block its the remaining data size
+                    // its either just the compression block size,
+                    // or if it's the last block, it's the remaining data size
                     var uncompressedSize = (int) Math.Min(pakEntry.CompressionBlockSize, pakEntry.UncompressedSize - uncompressedOff);
                     Decompress(compressed, 0, blockSize, uncompressed, uncompressedOff, uncompressedSize, pakEntry.CompressionMethod);
                     uncompressedOff += (int) pakEntry.CompressionBlockSize;
@@ -83,7 +86,7 @@ namespace CUE4Parse.UE4.Pak
             }
 
             // Pak Entry is written before the file data,
-            // but its the same as the one from the index, just without a name
+            // but it's the same as the one from the index, just without a name
             // We don't need to serialize that again so + file.StructSize
             reader.Position = pakEntry.Offset + pakEntry.StructSize; // Doesn't seem to be the case with older pak versions
             var size = (int) pakEntry.UncompressedSize.Align(pakEntry.IsEncrypted ? Aes.ALIGN : 1);
@@ -166,6 +169,15 @@ namespace CUE4Parse.UE4.Pak
             Ar.Position = Info.IndexOffset;
             FArchive primaryIndex = new FByteArchive($"{Name} - Primary Index", ReadAndDecrypt((int) Info.IndexSize));
 
+            int fileCount = 0;
+            EncryptedFileCount = 0;
+
+            if (Ar.Game == EGame.GAME_DreamStar)
+            {
+                primaryIndex.Position += 8; // PathHashSeed
+                fileCount = primaryIndex.Read<int>();
+            }
+
             string mountPoint;
             try
             {
@@ -179,10 +191,11 @@ namespace CUE4Parse.UE4.Pak
             ValidateMountPoint(ref mountPoint);
             MountPoint = mountPoint;
 
-            var fileCount = primaryIndex.Read<int>();
-            EncryptedFileCount = 0;
-
-            primaryIndex.Position += 8; // PathHashSeed
+            if (Ar.Game != EGame.GAME_DreamStar)
+            {
+                fileCount = primaryIndex.Read<int>();
+                primaryIndex.Position += 8; // PathHashSeed
+            }
 
             if (!primaryIndex.ReadBoolean())
                 throw new ParserException(primaryIndex, "No path hash index");
