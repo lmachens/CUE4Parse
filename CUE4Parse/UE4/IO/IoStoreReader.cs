@@ -201,7 +201,7 @@ namespace CUE4Parse.UE4.IO
 
         private byte[] Read(long offset, long length)
         {
-            length = length > int.MaxValue /2  ? int.MaxValue / 2 : length;
+            length = length > 2000000000   ? 2000000000  : length;
             var compressionBlockSize = TocResource.Header.CompressionBlockSize;
             var dst = new byte[length];
             var firstBlockIndex = (int) (offset / compressionBlockSize);
