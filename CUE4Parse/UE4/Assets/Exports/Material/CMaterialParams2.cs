@@ -50,7 +50,7 @@ namespace CUE4Parse.UE4.Assets.Exports.Material
                 "Albedo", "ALB", "TextureAlbedo",
                 "Base Color Texture", "BaseColorTexture", "Base_Color", "Base Color", "BaseColor", "Base Texture Color", "BaseColorA", "BC", "Color", "CO", "CO_", "CO_1", "Base_CO",
                 "Tex", "Tex_Color", "TexColor", "Tex_BaseColor", "AlbedMap", "Tex_Colormap",
-                "Decal_Texture", "PetalDetailMap", "CliffTexture", "M1_T_BC", "Skin Diffuse"
+                "Decal_Texture", "PetalDetailMap", "CliffTexture", "M1_T_BC", "Skin Diffuse", "ColorMap"
             },
             new []{ "Background Diffuse 2", "Diffuse_Texture_2", "DiffuseLayer2", "Diffuse B", "Diffuse B Map", "BaseColorB", "CO_2", "M2_T_BC" },
             new []{ "Background Diffuse 3", "Diffuse_Texture_3", "DiffuseLayer3", "Diffuse C", "Diffuse C Map", "BaseColorC", "CO_3", "M3_T_BC" },
@@ -68,7 +68,7 @@ namespace CUE4Parse.UE4.Assets.Exports.Material
                 "Normals", "Normal", "NormalA", "NormalTexture", "Normal Texture", "NormalMap", "Normal A Map", "T_Normal", "Normals Top", "Normals Side", "Fallback Normal",
                 "Base_Normal", "Base Normal", "Normal Base", "TextureNormal", "Tex_BakedNormal", "TexNor", "BakedNormalMap", "Base Texture Normal", "Normal Base Map",
                 "NM", "NM_1", "Base_NM", "NRM", "T_NRM", "M1_T_NRM", "Base NRM", "NRM Base",
-                "Texture A Normal", "CliffNormal", "Skin Normal"
+                "Texture A Normal", "CliffNormal", "Skin Normal","NormalMap"
             },
             new []{ "Normals_Texture_2", "Texture B Normal", "NormalB", "Normal B Map", "NM_2", "M2_T_NRM" },
             new []{ "Normals_Texture_3", "Texture C Normal", "NormalC", "Normal C Map", "NM_3", "M3_T_NRM" },
