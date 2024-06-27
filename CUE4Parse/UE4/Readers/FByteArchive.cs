@@ -74,6 +74,7 @@ namespace CUE4Parse.UE4.Readers
         public override T[] ReadArray<T>(int length)
         {
             var size = length * Unsafe.SizeOf<T>();
+            if(size < 0 || size >  Length) throw new IndexOutOfRangeException();
             var result = new T[length];
             if (length > 0) Unsafe.CopyBlockUnaligned(ref Unsafe.As<T, byte>(ref result[0]), ref _data[Position], (uint) size);
             Position += size;
@@ -85,6 +86,7 @@ namespace CUE4Parse.UE4.Readers
         {
             if (array.Length == 0) return;
             var size = array.Length * Unsafe.SizeOf<T>();
+            if(size >  Length) throw new IndexOutOfRangeException();
             Unsafe.CopyBlockUnaligned(ref Unsafe.As<T, byte>(ref array[0]), ref _data[Position], (uint) size);
             Position += size;
         }
