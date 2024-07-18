@@ -266,8 +266,11 @@ namespace CUE4Parse.UE4.Assets.Exports.SkeletalMesh
                 case EGame.GAME_RogueCompany or EGame.GAME_BladeAndSoul or EGame.GAME_SYNCED or EGame.GAME_SeekersofSkyveil:
                     Ar.Position += 4;
                     break;
-                case EGame.GAME_CalabiYau:
+                case EGame.GAME_CalabiYau or EGame.GAME_FragPunk:
                     Ar.Position += 8;
+                    break;
+                case EGame.GAME_MortalKombat1:
+                    Ar.Position += 12;
                     break;
             }
         }
