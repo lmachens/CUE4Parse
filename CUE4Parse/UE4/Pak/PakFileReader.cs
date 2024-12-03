@@ -116,7 +116,6 @@ namespace CUE4Parse.UE4.Pak
             var data = ReadAndDecryptAt(pakEntry.Offset + pakEntry.StructSize /* Doesn't seem to be the case with older pak versions */,
                 size, reader, pakEntry.IsEncrypted);
             return size != pakEntry.UncompressedSize ? data.SubByteArray((int) pakEntry.UncompressedSize) : data;
->>>>>>> upstream/master
         }
 
         public override IReadOnlyDictionary<string, GameFile> Mount(bool caseInsensitive = false)
