@@ -97,7 +97,11 @@ public class FTexturePlatformData
             Mips[i] = new FTexture2DMipMap(Ar);
 
             if (Owner is UVolumeTexture or UTextureCube)
+            {
                 Mips[i].SizeY *= GetNumSlices();
+                Mips[i].SizeZ = Mips[i].SizeZ == GetNumSlices() ? 1 : Mips[i].SizeZ;
+            }
+
         }
 
         if (Ar.Versions["VirtualTextures"])
@@ -105,7 +109,8 @@ public class FTexturePlatformData
             var bIsVirtual = Ar.ReadBoolean();
             if (bIsVirtual)
             {
-                VTData = new FVirtualTextureBuiltData(Ar, FirstMipToSerialize);
+                var LODBias = Owner.GetOrDefault<int>("LODBias");
+                VTData = new FVirtualTextureBuiltData(Ar, FirstMipToSerialize - LODBias);
             }
         }
 

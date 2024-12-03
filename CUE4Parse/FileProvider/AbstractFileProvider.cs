@@ -83,7 +83,7 @@ namespace CUE4Parse.FileProvider
                                 if (stringTable != null)
                                 {
                                     var keyName = g.Value.SubstringAfterLast(", \"").SubstringBeforeLast("\")"); // LOCTABLE("/Game/Narrative/LocalisedStrings/UI_Strings.UI_Strings", "23138_ui_pc_game_name_titlebar")
-                                    var stringTableEntry = stringTable.StringTable.KeysToMetaData;
+                                    var stringTableEntry = stringTable.StringTable.KeysToEntries;
                                     if (stringTableEntry.TryGetValue(keyName, out var value))
                                     {
                                         _gameDisplayName = value;
@@ -816,7 +816,7 @@ namespace CUE4Parse.FileProvider
             await TryLoadObjectAsync(objectPath) as T;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public virtual IEnumerable<UObject> LoadAllObjects(string? packagePath) => LoadAllObjectsAsync(packagePath).Result;
+        public virtual IEnumerable<UObject> LoadAllObjects(string? packagePath) => LoadAllObjectsAsync(packagePath).GetAwaiter().GetResult();
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public virtual async Task<IEnumerable<UObject>> LoadAllObjectsAsync(string? packagePath)
